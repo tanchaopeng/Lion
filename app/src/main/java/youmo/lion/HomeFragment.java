@@ -6,13 +6,15 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
-import org.xutils.view.annotation.ContentView;
-import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 
 import java.util.ArrayList;
@@ -20,34 +22,71 @@ import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import Adapters.HomeRecyclerAdapter;
 import Core.BaseFragment;
+import Models.HomeModel;
 
 /**
  * Created by tanch on 2016/2/16.
  */
 public class HomeFragment extends BaseFragment {
     private Activity act;
-    private ViewPager ViewPager_Main_Banner;
-
+    //private ViewPager ViewPager_Main_Banner;
+    private RecyclerView RecyclerView_Main_Content;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         act=getActivity();
-
     }
 
+    /**
+     * 初始化Views
+     */
+    private void InitViews(View v)
+    {
+        //ViewPager_Main_Banner=(ViewPager)v.findViewById(R.id.ViewPager_Main_Banner);
+        RecyclerView_Main_Content=(RecyclerView)v.findViewById(R.id.RecyclerView_Main_Content);
+    }
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v=inflater.inflate(R.layout.fragment_main,container,false);
-        ViewPager_Main_Banner=(ViewPager)v.findViewById(R.id.ViewPager_Main_Banner);
+        InitViews(v);
+        RecyclerView_Main_Content.setHasFixedSize(true);
+        RecyclerView_Main_Content.setLayoutManager(new GridLayoutManager(act,2));
+
+        List<HomeModel> data=new ArrayList<HomeModel>();
+        data.add(new HomeModel("","","",""));
+        data.add(new HomeModel("数码","平板","suface book","http://img4.duitang.com/uploads/item/201206/06/20120606175201_WZ2F3.jpeg"));
+        data.add(new HomeModel("数码","平板","suface book","http://d.3987.com/tfmnx_1309014/003.jpg"));
+        data.add(new HomeModel("数码","平板","suface book","http://imgsrc.baidu.com/forum/pic/item/e684e7f81a4c510f33b120e66059252dd52aa512.jpg"));
+        data.add(new HomeModel("数码","平板","suface book","http://p.qq181.com/cms/1304/2013040607430286882.jpg"));
+        data.add(new HomeModel("数码","平板","suface book","http://img4.duitang.com/uploads/item/201206/06/20120606175201_WZ2F3.jpeg"));
+        data.add(new HomeModel("数码","平板","suface book","http://d.3987.com/tfmnx_1309014/003.jpg"));
+        data.add(new HomeModel("数码","平板","suface book","http://imgsrc.baidu.com/forum/pic/item/e684e7f81a4c510f33b120e66059252dd52aa512.jpg"));
+        data.add(new HomeModel("数码","平板","suface book","http://p.qq181.com/cms/1304/2013040607430286882.jpg"));
+        data.add(new HomeModel("数码","平板","suface book","http://img4.duitang.com/uploads/item/201206/06/20120606175201_WZ2F3.jpeg"));
+        data.add(new HomeModel("数码","平板","suface book","http://d.3987.com/tfmnx_1309014/003.jpg"));
+        data.add(new HomeModel("数码","平板","suface book","http://imgsrc.baidu.com/forum/pic/item/e684e7f81a4c510f33b120e66059252dd52aa512.jpg"));
+        data.add(new HomeModel("数码","平板","suface book","http://p.qq181.com/cms/1304/2013040607430286882.jpg"));
+
 
         String[] BannerData={   "http://pic2.ooopic.com/10/58/62/79b1OOOPIC11.jpg",
                 "http://pic2.ooopic.com/10/55/95/26b1OOOPICf8.jpg",
                 "http://pic2.ooopic.com/10/93/68/93b1OOOPIC0f.jpg",
                 "http://pic2.ooopic.com/10/75/04/43b1OOOPICc1.jpg"
         };
-        InitBanner(ViewPager_Main_Banner,BannerData);
+        HomeRecyclerAdapter hra=new HomeRecyclerAdapter(act,data, BannerData);
+        hra.SetSubCilck(new HomeRecyclerAdapter.ISubCilck() {
+            @Override
+            public void OnClick(View v, int i) {
+                Toast.makeText(act,"第"+i,Toast.LENGTH_SHORT).show();
+            }
+        });
+        RecyclerView_Main_Content.setAdapter(hra);
+
+
+        //InitBanner(ViewPager_Main_Banner,BannerData);
         return v;
     }
 
@@ -56,7 +95,7 @@ public class HomeFragment extends BaseFragment {
      * @param viewPager
      * @param urls
      */
-    private void InitBanner(final ViewPager viewPager, String[] urls)
+    private void InitBanner(Activity activity,final ViewPager viewPager, String[] urls)
     {
         final List<ImageView> viewList=new ArrayList<ImageView>();
         //添加头部切换页
