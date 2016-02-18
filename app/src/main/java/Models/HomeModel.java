@@ -1,6 +1,7 @@
 package Models;
 
 import android.graphics.Bitmap;
+import android.nfc.Tag;
 
 /**
  * 主页
@@ -14,29 +15,45 @@ public class HomeModel {
     //子小标题
     private String SmallTitle;
 
-    public String getImg() {
+
+    public Bitmap getImg() {
         return Img;
     }
 
-    public void setImg(String img) {
+    public void setImg(Bitmap img) {
         Img = img;
     }
 
+    //图片
+    private Bitmap Img;
+
+    public String getImgLink() {
+        return ImgLink;
+    }
+
+    public void setImgLink(String imgLink) {
+        ImgLink = imgLink;
+    }
+
     //图片链接
-    private String Img;
+    private String ImgLink;
     //标识
-    private String tag;
+    private String Tag;
     //产品或分类链接
     private String Link;
     //其他信息
     private String Other;
 
-    public HomeModel(String allTitle,String title,String smallTitle,String img)
+    public HomeModel(String tag)
+    {
+        Tag=tag;
+    }
+    public HomeModel(String allTitle,String title,String smallTitle,String imgLink)
     {
         AllTitle=allTitle;
         Title=title;
         SmallTitle=smallTitle;
-        Img=img;
+        this.ImgLink=imgLink;
     }
 
 
@@ -74,11 +91,11 @@ public class HomeModel {
     }
 
     public String getTag() {
-        return tag;
+        return Tag;
     }
 
     public void setTag(String tag) {
-        this.tag = tag;
+        this.Tag = tag;
     }
 
     public String getTitle() {
