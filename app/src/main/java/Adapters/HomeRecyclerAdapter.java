@@ -8,6 +8,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -91,6 +92,8 @@ public class HomeRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             Title=(TextView)v.findViewById(R.id.TextView_Home_Title);
             SmallTitle=(TextView)v.findViewById(R.id.TextView_Home_SmallTitle);
             Img=(ImageView)v.findViewById(R.id.ImageView_Home_Img);
+
+            Img.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,DensityUtil.dip2px(250)));
             Img.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -133,6 +136,8 @@ public class HomeRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             gridManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
                 @Override
                 public int getSpanSize(int position) {
+                    if (getItemViewType(position)==2)
+                        return 2;
                     return getItemViewType(position) == TYPE_HEADER ? gridManager.getSpanCount() : 1;
                 }
             });
@@ -154,6 +159,8 @@ public class HomeRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
         if (position==0)
             return TYPE_HEADER;
+        if (position==1)
+            return 2;
         return super.getItemViewType(position);
     }
 }

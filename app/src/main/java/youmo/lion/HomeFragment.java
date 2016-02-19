@@ -13,16 +13,19 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.Glide;
 
 import org.xutils.common.Callback;
+import org.xutils.common.util.DensityUtil;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
 
@@ -43,10 +46,12 @@ public class HomeFragment extends BaseFragment {
     private Activity act;
     //private ViewPager ViewPager_Main_Banner;
     private RecyclerView RecyclerView_Main_Content;
+    private LinearLayout LinearLayout_Main_Content;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         act=getActivity();
+
     }
 
     /**
@@ -55,70 +60,24 @@ public class HomeFragment extends BaseFragment {
     private void InitViews(View v)
     {
         //ViewPager_Main_Banner=(ViewPager)v.findViewById(R.id.ViewPager_Main_Banner);
-        RecyclerView_Main_Content=(RecyclerView)v.findViewById(R.id.RecyclerView_Main_Content);
+        //RecyclerView_Main_Content=(RecyclerView)v.findViewById(R.id.RecyclerView_Main_Content);
+        LinearLayout_Main_Content=(LinearLayout)v.findViewById(R.id.LinearLayout_Main_Content);
     }
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_main, container, false);
         InitViews(v);
-        RecyclerView_Main_Content.setHasFixedSize(true);
-        RecyclerView_Main_Content.setLayoutManager(new GridLayoutManager(act, 2));
-
-        List<HomeModel> data = new ArrayList<HomeModel>();
-        data.add(new HomeModel("数码", "平板", "suface book", "http://img4.duitang.com/uploads/item/201206/06/20120606175201_WZ2F3.jpeg"));
-        data.add(new HomeModel("数码", "平板", "suface book", "http://d.3987.com/tfmnx_1309014/003.jpg"));
-        data.add(new HomeModel("数码", "平板", "suface book", "http://imgsrc.baidu.com/forum/pic/item/e684e7f81a4c510f33b120e66059252dd52aa512.jpg"));
-//        data.add(new HomeModel("数码", "平板", "suface book", "http://p.qq181.com/cms/1304/2013040607430286882.jpg"));
-//        data.add(new HomeModel("数码", "平板", "suface book", "http://img4.duitang.com/uploads/item/201206/06/20120606175201_WZ2F3.jpeg"));
-//        data.add(new HomeModel("数码", "平板", "suface book", "http://d.3987.com/tfmnx_1309014/003.jpg"));
-//        data.add(new HomeModel("数码", "平板", "suface book", "http://imgsrc.baidu.com/forum/pic/item/e684e7f81a4c510f33b120e66059252dd52aa512.jpg"));
-//        data.add(new HomeModel("数码", "平板", "suface book", "http://p.qq181.com/cms/1304/2013040607430286882.jpg"));
-//        data.add(new HomeModel("数码", "平板", "suface book", "http://img4.duitang.com/uploads/item/201206/06/20120606175201_WZ2F3.jpeg"));
-//        data.add(new HomeModel("数码", "平板", "suface book", "http://d.3987.com/tfmnx_1309014/003.jpg"));
-//        data.add(new HomeModel("数码", "平板", "suface book", "http://imgsrc.baidu.com/forum/pic/item/e684e7f81a4c510f33b120e66059252dd52aa512.jpg"));
-        data.add(new HomeModel("数码", "平板", "suface book", "http://p.qq181.com/cms/1304/2013040607430286882.jpg"));
-
-
         String[] BannerData={   "http://pic2.ooopic.com/10/58/62/79b1OOOPIC11.jpg",
                 "http://pic2.ooopic.com/10/55/95/26b1OOOPICf8.jpg",
                 "http://pic2.ooopic.com/10/93/68/93b1OOOPIC0f.jpg",
                 "http://pic2.ooopic.com/10/75/04/43b1OOOPICc1.jpg"
         };
+        List<HomeModel> data = new ArrayList<HomeModel>();
+        InitData(data);
 
-
-        final HomeRecyclerAdapter hra=new HomeRecyclerAdapter(act,data);
-        hra.SetSubCilck(new HomeRecyclerAdapter.ISubCilck() {
-            @Override
-            public void OnClick(View v, int i) {
-                Toast.makeText(act,"第"+i,Toast.LENGTH_SHORT).show();
-            }
-        });
-        BannerHolder bh=new BannerHolder(act,new ViewPager(act).getRootView(),BannerData);
-        hra.AddHead(bh);
-        bh=new BannerHolder(act,new ViewPager(act).getRootView(),BannerData);
-        hra.AddHead(bh);
-        RecyclerView_Main_Content.setAdapter(hra);
-
-        //InitBanner(ViewPager_Main_Banner,BannerData);
+        LinearLayout_Main_Content.addView(InitBanner(act,BannerData));
         return v;
-    }
-
-
-    public static Bitmap drawableToBitmap(Drawable drawable) {
-        // 取 drawable 的长宽
-         int w = drawable.getIntrinsicWidth();
-         int h = drawable.getIntrinsicHeight();
-        // 取 drawable 的颜色格式
-         Bitmap.Config config = drawable.getOpacity() != PixelFormat.OPAQUE ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565;
-        // 建立对应 bitmap
-         Bitmap bitmap = Bitmap.createBitmap(w, h, config);
-        // 建立对应 bitmap 的画布
-         Canvas canvas = new Canvas(bitmap);
-         drawable.setBounds(0, 0, w, h);
-        // 把 drawable 内容画到画布中
-         drawable.draw(canvas);
-        return bitmap;
     }
 
     /**
@@ -126,8 +85,10 @@ public class HomeFragment extends BaseFragment {
      * @param viewPager
      * @param urls
      */
-    private void InitBanner(Activity activity,final ViewPager viewPager, String[] urls)
+    private ViewPager InitBanner(Activity activity, String[] urls)
     {
+        final ViewPager viewPager=new ViewPager(activity);
+        viewPager.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, DensityUtil.dip2px(150)));
         final List<ImageView> viewList=new ArrayList<ImageView>();
         //添加头部切换页
         ImageView head=new ImageView(act);
@@ -207,5 +168,60 @@ public class HomeFragment extends BaseFragment {
                 });
             }
         },5,5, TimeUnit.SECONDS);
+
+        return viewPager;
     }
+
+    private void InitData(List<HomeModel> data)
+    {
+        data.add(new HomeModel("数码", "平板", "suface book", "http://img4.duitang.com/uploads/item/201206/06/20120606175201_WZ2F3.jpeg"));
+        data.add(new HomeModel("数码", "平板", "suface book", "http://d.3987.com/tfmnx_1309014/003.jpg"));
+        data.add(new HomeModel("数码", "平板", "suface book", "http://imgsrc.baidu.com/forum/pic/item/e684e7f81a4c510f33b120e66059252dd52aa512.jpg"));
+        data.add(new HomeModel("数码", "平板", "suface book", "http://p.qq181.com/cms/1304/2013040607430286882.jpg"));
+        data.add(new HomeModel("数码", "平板", "suface book", "http://img4.duitang.com/uploads/item/201206/06/20120606175201_WZ2F3.jpeg"));
+        data.add(new HomeModel("数码", "平板", "suface book", "http://d.3987.com/tfmnx_1309014/003.jpg"));
+        data.add(new HomeModel("数码", "平板", "suface book", "http://imgsrc.baidu.com/forum/pic/item/e684e7f81a4c510f33b120e66059252dd52aa512.jpg"));
+        data.add(new HomeModel("数码", "平板", "suface book", "http://p.qq181.com/cms/1304/2013040607430286882.jpg"));
+        data.add(new HomeModel("数码", "平板", "suface book", "http://img4.duitang.com/uploads/item/201206/06/20120606175201_WZ2F3.jpeg"));
+        data.add(new HomeModel("数码", "平板", "suface book", "http://d.3987.com/tfmnx_1309014/003.jpg"));
+        data.add(new HomeModel("数码", "平板", "suface book", "http://imgsrc.baidu.com/forum/pic/item/e684e7f81a4c510f33b120e66059252dd52aa512.jpg"));
+        data.add(new HomeModel("数码", "平板", "suface book", "http://p.qq181.com/cms/1304/2013040607430286882.jpg"));
+    }
+
+    //RecyclerView方式实现
+//    RecyclerView_Main_Content.setHasFixedSize(true);
+//    RecyclerView_Main_Content.setLayoutManager(new GridLayoutManager(act,4));
+//
+//    List<HomeModel> data = new ArrayList<HomeModel>();
+//    data.add(new HomeModel("数码", "平板", "suface book", "http://img4.duitang.com/uploads/item/201206/06/20120606175201_WZ2F3.jpeg"));
+//    data.add(new HomeModel("数码", "平板", "suface book", "http://d.3987.com/tfmnx_1309014/003.jpg"));
+//    data.add(new HomeModel("数码", "平板", "suface book", "http://imgsrc.baidu.com/forum/pic/item/e684e7f81a4c510f33b120e66059252dd52aa512.jpg"));
+//    data.add(new HomeModel("数码", "平板", "suface book", "http://p.qq181.com/cms/1304/2013040607430286882.jpg"));
+//    data.add(new HomeModel("数码", "平板", "suface book", "http://img4.duitang.com/uploads/item/201206/06/20120606175201_WZ2F3.jpeg"));
+//    data.add(new HomeModel("数码", "平板", "suface book", "http://d.3987.com/tfmnx_1309014/003.jpg"));
+//    data.add(new HomeModel("数码", "平板", "suface book", "http://imgsrc.baidu.com/forum/pic/item/e684e7f81a4c510f33b120e66059252dd52aa512.jpg"));
+//    data.add(new HomeModel("数码", "平板", "suface book", "http://p.qq181.com/cms/1304/2013040607430286882.jpg"));
+//    data.add(new HomeModel("数码", "平板", "suface book", "http://img4.duitang.com/uploads/item/201206/06/20120606175201_WZ2F3.jpeg"));
+//    data.add(new HomeModel("数码", "平板", "suface book", "http://d.3987.com/tfmnx_1309014/003.jpg"));
+//    data.add(new HomeModel("数码", "平板", "suface book", "http://imgsrc.baidu.com/forum/pic/item/e684e7f81a4c510f33b120e66059252dd52aa512.jpg"));
+//    data.add(new HomeModel("数码", "平板", "suface book", "http://p.qq181.com/cms/1304/2013040607430286882.jpg"));
+//
+//
+//    String[] BannerData={   "http://pic2.ooopic.com/10/58/62/79b1OOOPIC11.jpg",
+//            "http://pic2.ooopic.com/10/55/95/26b1OOOPICf8.jpg",
+//            "http://pic2.ooopic.com/10/93/68/93b1OOOPIC0f.jpg",
+//            "http://pic2.ooopic.com/10/75/04/43b1OOOPICc1.jpg"
+//    };
+//
+//
+//    final HomeRecyclerAdapter hra=new HomeRecyclerAdapter(act,data);
+//    hra.SetSubCilck(new HomeRecyclerAdapter.ISubCilck() {
+//        @Override
+//        public void OnClick(View v, int i) {
+//            Toast.makeText(act,"第"+i,Toast.LENGTH_SHORT).show();
+//        }
+//    });
+//    BannerHolder bh=new BannerHolder(act,new ViewPager(act).getRootView(),BannerData);
+//    hra.AddHead(bh);
+//    RecyclerView_Main_Content.setAdapter(hra);
 }
